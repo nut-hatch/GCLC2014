@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Cache-control" content="max-age=290304000, public">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Simple dummy webpage to hack">
+<meta name="author" content="Green Code Lab Challenge">
+<title>Green Code Lab Challenge 2014 sample webpage</title>
+</head>
+<body>
+<nav class="navbar glc-navbar navbar-fixed-top" role="navigation">
+<div class="container">
+<div class="navbar-header">
+<img src="img/logo.png" width="62" style="float: left;" />
+<a class="navbar-brand">GreenCodeLab Challenge 2014</a>
+</div>
+</div>
+</nav>
+<div class="jumbotron">                                                                               
+<div class="container">
+<h1>Hello, world!</h1>
+<p>Welcome on board! This is your sample website. Fell free to add / correct what you want.
+<p>Please do not delete any sentence included in this webpage</p>
+</div>
+</div>
+<div class="container">
+<div class="row">
+<div id="slideshow">
+<p>
+<marquee>This could be a nice place for a slideshow, don't you think?</marquee>
+</p>
+<!-- SLIDESHOW!!! -->
+<?php 
+if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])){
+	$mobile = true;
+	echo '<div class="my-slideshow my-slideshow-mobile">';
+} else {
+	$mobile = false;
+	echo '<div class="my-slideshow">';
+}
+require dirname(__FILE__)."/src/resize.php";
+
+//First we need to go through the image folder, create an image for every file, maybe a caption
+$gclcpropfolder = '../gclcimages/';
+$tmpProps = array();
+if ($handle = opendir($gclcpropfolder)) {
+	while (false !== ($file = readdir($handle))) {
+    	$extension = trim(strtoupper(pathinfo($file,PATHINFO_EXTENSION)));
+		if ($extension == 'PROP') {
+			$tmpProps[pathinfo($file,PATHINFO_FILENAME)] = $file;
+		}
+	}
+}
+closedir($handle);
+if ($mobile){
+	$folder = 'images/gclcimages_mobile/';
+} else {
+	$folder = 'images/gclcimages_desktop/';
+}
+if ($handle = opendir($folder)) {
+	$show = 'class="show"';
+	$cnt = 0; 
+	
+    while (false !== ($file = readdir($handle))) {
+    	$filepath = $folder.$file;
+    	if ($file !== '.' && $file !== '..') {
+    		$extension = trim(strtoupper(pathinfo($filepath,PATHINFO_EXTENSION)));
+    		if ($extension == "JPG" || $extension == "JPEG" || $extension == "PNG") {
+    			$caption = "";
+    			$filename = pathinfo($file, PATHINFO_FILENAME);
+    			if ($tmpProps[$filename]) {
+    				$handleProp = fopen($gclcpropfolder.$tmpProps[$filename], "r");
+    				if ($handleProp) {
+    					while (($line = fgets($handleProp)) !== false) {
+    						$caption = $line;
+    					}
+    					$caption = substr($caption, 12);
+    				}
+    				fclose($handleProp);
+    				unset($tmpProps[$file]);
+    			}
+    			echo '<figure '.$show.'><img src="'.$filepath.'" alt="" width="100%" /><figcaption>'.$caption.'</figcaption></figure>';
+	    		$show = '';
+	    		$cnt++;
+    		}
+    	}
+    }
+    closedir($handle);
+}
+?>
+<span class="prev">«</span>
+<span class="next">»</span>
+<span class="pause">pause</span>
+<span class="play">play</span>
+<span class="cnt"><span id="currcnt">1</span><?php echo "/".$cnt; ?></span>
+</div>
+<div id="my-slideshow_navigation">
+<?php 
+	echo '<img id="0" src="spec slideshow/selected.png" name="nav-bullet"/>';
+	for($i=1;$i<$cnt;$i++) {
+		echo '<img id="'.$i.'" src="spec slideshow/not-selected.png" name="nav-bullet"/>';
+	}
+?>
+<script>
+//Java-Script part
+(function (){
+	var counter = 0,
+	$items = document.querySelectorAll('.my-slideshow figure'),
+	numItems = $items.length,
+	timer;
+
+	//fades next image after 3 sec
+	function fade() {
+		timer = setTimeout(function () { counter++;showCurrent();fade(); }, 3000);
+	}
+	
+	function detectswipe(el,func) {
+      swipe_det = new Object();
+      swipe_det.sX = 0;
+      swipe_det.sY = 0;
+      swipe_det.eX = 0;
+      swipe_det.eY = 0;
+      var min_x = 20;
+      var max_y = 50;
+      var direc = "";
+      ele = document.getElementById(el);
+      ele.addEventListener('touchstart',function(e){
+        var t = e.touches[0];
+        swipe_det.sX = t.screenX; 
+        swipe_det.sY = t.screenY;
+      },false);
+      ele.addEventListener('touchmove',function(e){
+        e.preventDefault();
+        var t = e.touches[0];
+        swipe_det.eX = t.screenX; 
+        swipe_det.eY = t.screenY;    
+      },false);
+      ele.addEventListener('touchend',function(e){
+        //horizontal detection
+        if ((((swipe_det.eX - min_x > swipe_det.sX) || (swipe_det.eX + min_x < swipe_det.sX)) && ((swipe_det.eY < swipe_det.sY + max_y) && (swipe_det.sY > swipe_det.eY - max_y)))) {
+          if(swipe_det.eX > swipe_det.sX) direc = "right";
+          else direc = "left";
+        }
+    
+        if (direc != "") {
+          if(typeof func == 'function') func(el,direc);
+        }
+        direc = "";
+      },false);  
+    }
+
+    function myfunction(el,d) {
+     	if(d=="right"){
+	  		clearTimeout(timer);
+	  		counter++;
+			showCurrent();
+		}
+		else if(d=="left"){
+			clearTimeout(timer);
+			counter--;
+			showCurrent();
+		}
+    }
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+		detectswipe('slideshow',myfunction);
+	}
+	
+	//realizes transition
+	function showCurrent(set_counter) {
+		//maybe a specific image was requested
+		oldcounter = typeof set_counter !== 'undefined' ? counter : counter-1;
+		counter = typeof set_counter !== 'undefined' ? set_counter : counter;
+		
+		if (counter == -1) {
+			counter = numItems-1;
+		}
+		var itemToShow = Math.abs(counter%numItems);
+		
+		[].forEach.call( $items, function(el){
+			//remove css classes
+			el.classList.remove('show');
+			el.classList.remove('show_t2');
+			//update navbutton and current image count
+			document.getElementById("currcnt").innerHTML = itemToShow+1;
+			tmp = document.getElementById(oldcounter%numItems);
+			if (null !== tmp) {
+				tmp.src = "spec slideshow/not-selected.png";
+			}
+			tmp = document.getElementById((oldcounter+2)%numItems);
+			if (null !== tmp) {
+				tmp.src = "spec slideshow/not-selected.png";
+			}
+			tmp = document.getElementById(counter%numItems);
+			if (null !== tmp) {
+				tmp.src = "spec slideshow/selected.png";
+			}
+		});
+
+		//realize different transition (spec) by odd and even
+		if (itemToShow%2==0) {
+			$items[itemToShow].classList.add('show');
+		} else {
+			$items[itemToShow].classList.add('show');
+			$items[itemToShow].classList.add('show_t2');
+		}
+	};
+
+	// next img
+	document.querySelector('.next').addEventListener('click', function() {
+		counter++;
+		showCurrent();
+	}, false);
+
+	//previous img
+	document.querySelector('.prev').addEventListener('click', function(evt) {
+		counter--;
+		showCurrent();
+	}, false);
+
+	//stop timer
+	document.querySelector('.pause').addEventListener('click', function() {
+		clearTimeout(timer);
+	}, false);
+
+	//restart timer
+	document.querySelector('.play').addEventListener('click', function() {
+		fade();
+	}, false);
+
+	//auto-stop on mouseover
+	document.querySelector('.my-slideshow').addEventListener('mouseover', function() {
+		clearTimeout(timer);
+	}, false);
+
+	//restart on mouseout
+	document.querySelector('.my-slideshow').addEventListener('mouseout', function() {
+		fade();
+	}, false);
+
+	// bullet navigation
+	var navBullets = document.getElementsByName('nav-bullet');
+	for (var i = 0; i < navBullets.length; i++) {
+		navBullet = navBullets[i];
+		function myFunc(evt) {
+			clearTimeout(timer);
+			showCurrent(evt.target.id);
+			fade();
+		};
+		navBullet.addEventListener('click', myFunc, false);
+    }
+
+	fade();
+	
+	})();
+</script>
+</div>
+
+</div>
+</div>
+<div class="row">
+<div class="col-md-4">
+<h2>Who will be the best Green developer in this latest edition ? </h2>
+<p>
+Eco-design software, is new. Your mission in the month before the contest 
+is to make a short video explaining to a general public the impact of the software. you then publish 
+this video on the networks. The most viral video will be rewarded and will bring you points in the final standings.
+</p>
+</div>
+<div class="col-md-4">
+<h2>On your marks, Ready, Set, CODE !</h2>
+<p>The Green Code Lab Challenge is a unique opportunity for you to to develop your skills set in ECO-CONCEPTION.<br>
+Come and share the adventure.</p>
+<ul>
+    <li>Think eco design</li>
+    <li>Think performance</li>
+    <li>Think accessibility</li>
+</div>
+<div class="col-md-4">
+<h2>What's hot on Twitter?</h2>
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/hashtag/GCLChallenge" data-widget-id="538040596460752897">#GCLChallenge Tweets</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<h4 style="text-align:center"><div class="well">Share your thoughts!</div></h4>
+</div>
+</div>
+<hr>
+<footer>
+<p>Sincerely yours, <a href="http://www.greencodelab-challenge.org" target="_blank">The GreenCodeLab Challenge Team.</a></p>
+</footer>
+</div>
+</body>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="css/gclc.css" rel="stylesheet">
+</html>

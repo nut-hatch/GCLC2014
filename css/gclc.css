@@ -1,0 +1,135 @@
+body{
+    font-family: 'Roboto Slab', serif;
+}
+.glc-navbar{
+    background-color: #37b494;
+}
+.glc-navbar a{
+    color: #000;
+}
+.my-slideshow {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	width: 900px;
+	height: 360px;
+}
+.my-slideshow-mobile {
+	width: 320px;
+	height: 128px;
+}
+figure {
+	position: absolute;
+	opacity: 0;
+	transition: 1s opacity;
+}
+
+figcaption {
+	position: absolute;
+	font-family: sans-serif;
+	font-size: .8em;
+	bottom: .75em;
+	right: .35em;
+	padding: .25em;
+	color: #fff;
+	background: rgba(0, 0, 0, .25);
+	border-radius: 2px;
+}
+
+figcaption a {
+	color: #fff;
+}
+
+.next,.prev,.pause,.play,.cnt {
+	color: #fff;
+	position: absolute;
+	background: rgba(0, 0, 0, .6);
+	top: 50%;
+	z-index: 1;
+	font-size: 2em;
+	margin-top: -.75em;
+	opacity: .3;
+	user-select: none;
+}
+
+.next:hover,.prev:hover,.pause:hover,.play:hover {
+	cursor: pointer;
+	opacity: 1;
+}
+
+.next {
+	right: 0;
+	padding: 10px 5px 15px 10px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.prev {
+	left: 0;
+	padding: 10px 10px 15px 5px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.pause {
+	top: 5px;
+	right: 65px;
+	padding: 5px 5px 5px 5px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.play {
+	top: 5px;
+	right: 0px;
+	padding: 5px 5px 5px 5px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.cnt {
+	top: 90%;
+	left: 5px;
+	padding: 5px 5px 5px 5px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+figure {
+	width: 100%;
+	position: absolute;
+	opacity: 0;
+	-webkit-opacity: 0;
+	-moz-opacity: 0;
+	transition: opacity 1s ease-in-out;
+	-moz-transition: opacity 1s ease-in-out;
+	-webkit-transition: opacity 1s ease-in-out;
+}
+
+figure.show {
+	opacity: 1;
+	-webkit-opacity: 1;
+	-moz-opacity: 1;
+	position: static;
+	transition: 1s opacity;
+	/*-webkit-transition:width 2s, height 2s, background-color 2s, -webkit-transform 2s;
+transition:width 1s, height 1s, background-color 2s, transform 2s;
+ transform:rotate(360deg);*/
+	-webkit-transition: opacity 1.5s ease-out;
+	-moz-transition: opacity 1.5s ease-out;
+	-ms-transition: opacity 1.5s ease-out;
+	-o-transition: opacity 1.5s ease-out;
+	transition: opacity 1.5s ease-out;
+}
+
+figure.show_t2 {
+	opacity: 1;
+	-webkit-opacity: 1;
+	-moz-opacity: 1;
+	position: static;
+	-webkit-transition: opacity 1.5s ease-in;
+	-moz-transition: opacity 1.5s ease-in;
+	-ms-transition: opacity 1.5s ease-in;
+	-o-transition: opacity 1.5s ease-in;
+	transition: opacity 1.5s ease-in;
+}
